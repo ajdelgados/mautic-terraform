@@ -35,6 +35,10 @@ resource "aws_instance" "terraform-instance" {
   tags = {
     Name = "terraform-instance"
   }
+
+  volume_tags = {
+    Name = "terraform-instance"
+  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "ec2_cpu" {
@@ -65,4 +69,38 @@ resource "aws_cloudwatch_metric_alarm" "ec2_fail" {
   insufficient_data_actions = []
   dimensions                = { InstanceId = aws_instance.terraform-instance.id }
   alarm_actions = ["arn:aws:sns:us-east-2:579010345876:mautic-alert"]
+}
+
+resource "aws_dlm_lifecycle_policy" "terraform-instance" {
+  description        = "terraform-instance DLM lifecycle policy"
+  execution_role_arn = "arn:aws:iam::579010345876:role/service-role/AWSDataLifecycleManagerDefaultRole"
+  state              = "ENABLED"
+
+  policy_details {
+    resource_types = ["INSTANCE"]
+
+    schedule {
+      name = "1 daily snapshots"
+
+      create_rule {
+        interval      = 24
+        interval_unit = "HOURS"
+        times         = ["04:00"]
+      }
+
+      retain_rule {
+        count = 30
+      }
+
+      tags_to_add = {
+        Name = "terraform-instance"
+      }
+
+      copy_tags = false
+    }
+
+    target_tags = {
+      Name = "terraform-instance"
+    }
+  }
 }
