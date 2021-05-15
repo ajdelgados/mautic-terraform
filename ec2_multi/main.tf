@@ -27,8 +27,10 @@ data "aws_ami" "ubuntu" {
 }
 
 module "mautic-instance" {
-  for_each = toset(["prueba1", "prueba2"])
+  #data.aws_ami.ubuntu.id
+  for_each = {
+  }
   source = "../modules"
   name = "${each.key}-instance"
-  ami = data.aws_ami.ubuntu.id
+  ami = each.value.ami
 }
