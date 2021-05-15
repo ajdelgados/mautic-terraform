@@ -29,6 +29,9 @@ data "aws_ami" "ubuntu" {
 module "mautic-instance" {
   #data.aws_ami.ubuntu.id
   for_each = {
+    /*mautic = {
+      ami = data.aws_ami.ubuntu.id
+    }*/
   }
   source = "../modules"
   name = "${each.key}-instance"

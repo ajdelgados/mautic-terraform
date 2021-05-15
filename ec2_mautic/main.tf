@@ -42,7 +42,7 @@ resource "aws_instance" "terraform-instance" {
 }
 
 resource "aws_eip" "lb" {
-  instance = aws_instance.web.id
+  instance = aws_instance.terraform-instance.id
   vpc      = true
 }
 
