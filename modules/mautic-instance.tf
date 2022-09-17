@@ -85,3 +85,11 @@ resource "aws_dlm_lifecycle_policy" "this" {
     }
   }
 }
+
+resource "aws_route53_record" "this" {
+  zone_id = var.zone_id
+  name    = var.zone_name
+  type    = "A"
+  ttl     = "300"
+  records = [aws_eip.this.public_ip]
+}
